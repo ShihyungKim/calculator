@@ -1,89 +1,103 @@
 import streamlit as st
 import math
 
-st.set_page_config(page_title="Advanced Calculator", page_icon="🧮")
+st.set_page_config(page_title="Button Calculator", page_icon="🧮")
 
-# 계산기 그림
-calculator_svg = """
-<div style="text-align:center;">
-<svg width="180" height="180" viewBox="0 0 200 200">
-  <rect x="45" y="20" width="110" height="160" rx="18" fill="#4B5563"/>
-  <rect x="60" y="38" width="80" height="35" rx="6" fill="#E5E7EB"/>
-  <text x="100" y="62" text-anchor="middle" font-size="20" fill="#111827">123</text>
+st.title("🧮 진짜 계산기처럼 누르는 계산기")
 
-  <circle cx="70" cy="95" r="10" fill="#F9FAFB"/>
-  <circle cx="100" cy="95" r="10" fill="#F9FAFB"/>
-  <circle cx="130" cy="95" r="10" fill="#F9FAFB"/>
+# 화면에 표시될 식 저장
+if "expression" not in st.session_state:
+    st.session_state.expression = ""
 
-  <circle cx="70" cy="125" r="10" fill="#F9FAFB"/>
-  <circle cx="100" cy="125" r="10" fill="#F9FAFB"/>
-  <circle cx="130" cy="125" r="10" fill="#F59E0B"/>
+def press(value):
+    st.session_state.expression += str(value)
 
-  <circle cx="70" cy="155" r="10" fill="#F9FAFB"/>
-  <circle cx="100" cy="155" r="10" fill="#F9FAFB"/>
-  <circle cx="130" cy="155" r="10" fill="#10B981"/>
-</svg>
-</div>
-"""
+def clear():
+    st.session_state.expression = ""
 
-st.markdown(calculator_svg, unsafe_allow_html=True)
+def calculate():
+    try:
+        expr = st.session_state.expression
 
-st.title("🧮 Advanced Calculator")
+        expr = expr.replace("×", "*")
+        expr = expr.replace("÷", "/")
+        expr = expr.replace("^", "**")
 
-operation = st.selectbox(
-    "연산을 선택하세요",
-    (
-        "덧셈 (+)",
-        "뺄셈 (-)",
-        "곱셈 (*)",
-        "나눗셈 (/)",
-        "모듈러 (%)",
-        "지수 (x^y)",
-        "로그 (log)"
-    )
+        result = eval(expr)
+        st.session_state.expression = str(result)
+
+    except ZeroDivisionError:
+        st.session_state.expression = "0으로 나눌 수 없습니다"
+
+    except:
+        st.session_state.expression = "오류"
+
+# 계산기 화면
+st.text_input(
+    "계산식",
+    value=st.session_state.expression,
+    disabled=True
 )
 
-num1 = st.number_input("첫 번째 숫자", value=0.0)
+# 버튼 배치
+col1, col2, col3, col4 = st.columns(4)
 
-if operation == "로그 (log)":
-    base = st.number_input("밑 (base)", value=10.0)
-else:
-    num2 = st.number_input("두 번째 숫자", value=0.0)
+with col1:
+    if st.button("7"):
+        press("7")
+    if st.button("4"):
+        press("4")
+    if st.button("1"):
+        press("1")
+    if st.button("0"):
+        press("0")
 
-if st.button("계산하기"):
+with col2:
+    if st.button("8"):
+        press("8")
+    if st.button("5"):
+        press("5")
+    if st.button("2"):
+        press("2")
+    if st.button("."):
+        press(".")
 
-    try:
-        if operation == "덧셈 (+)":
-            result = num1 + num2
+with col3:
+    if st.button("9"):
+        press("9")
+    if st.button("6"):
+        press("6")
+    if st.button("3"):
+        press("3")
+    if st.button("="):
+        calculate()
 
-        elif operation == "뺄셈 (-)":
-            result = num1 - num2
+with col4:
+    if st.button("÷"):
+        press("÷")
+    if st.button("×"):
+        press("×")
+    if st.button("-"):
+        press("-")
+    if st.button("+"):
+        press("+")
 
-        elif operation == "곱셈 (*)":
-            result = num1 * num2
+st.write("")
 
-        elif operation == "나눗셈 (/)":
-            if num2 == 0:
-                st.error("0으로 나눌 수 없습니다.")
-                st.stop()
-            result = num1 / num2
+col5, col6, col7, col8 = st.columns(4)
 
-        elif operation == "모듈러 (%)":
-            if num2 == 0:
-                st.error("0으로 나눌 수 없습니다.")
-                st.stop()
-            result = num1 % num2
+with col5:
+    if st.button("C"):
+        clear()
 
-        elif operation == "지수 (x^y)":
-            result = num1 ** num2
+with col6:
+    if st.button("^"):
+        press("^")
 
-        elif operation == "로그 (log)":
-            if num1 <= 0 or base <= 0 or base == 1:
-                st.error("올바른 로그 입력값이 아닙니다.")
-                st.stop()
-            result = math.log(num1, base)
+with col7:
+    if st.button("("):
+        press("(")
 
-        st.success(f"결과: {result}")
-
-    except Exception as e:
-        st.error(f"오류 발생: {e}")
+with col8:
+    if st.button(")"):
+        press(")")
