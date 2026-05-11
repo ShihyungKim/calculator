@@ -3,9 +3,33 @@ import math
 
 st.set_page_config(page_title="Advanced Calculator", page_icon="🧮")
 
+# 계산기 그림
+calculator_svg = """
+<div style="text-align:center;">
+<svg width="180" height="180" viewBox="0 0 200 200">
+  <rect x="45" y="20" width="110" height="160" rx="18" fill="#4B5563"/>
+  <rect x="60" y="38" width="80" height="35" rx="6" fill="#E5E7EB"/>
+  <text x="100" y="62" text-anchor="middle" font-size="20" fill="#111827">123</text>
+
+  <circle cx="70" cy="95" r="10" fill="#F9FAFB"/>
+  <circle cx="100" cy="95" r="10" fill="#F9FAFB"/>
+  <circle cx="130" cy="95" r="10" fill="#F9FAFB"/>
+
+  <circle cx="70" cy="125" r="10" fill="#F9FAFB"/>
+  <circle cx="100" cy="125" r="10" fill="#F9FAFB"/>
+  <circle cx="130" cy="125" r="10" fill="#F59E0B"/>
+
+  <circle cx="70" cy="155" r="10" fill="#F9FAFB"/>
+  <circle cx="100" cy="155" r="10" fill="#F9FAFB"/>
+  <circle cx="130" cy="155" r="10" fill="#10B981"/>
+</svg>
+</div>
+"""
+
+st.markdown(calculator_svg, unsafe_allow_html=True)
+
 st.title("🧮 Advanced Calculator")
 
-# 연산 선택
 operation = st.selectbox(
     "연산을 선택하세요",
     (
@@ -19,16 +43,13 @@ operation = st.selectbox(
     )
 )
 
-# 입력값
 num1 = st.number_input("첫 번째 숫자", value=0.0)
 
-# 로그일 때는 입력 다르게 처리
 if operation == "로그 (log)":
     base = st.number_input("밑 (base)", value=10.0)
 else:
     num2 = st.number_input("두 번째 숫자", value=0.0)
 
-# 계산 버튼
 if st.button("계산하기"):
 
     try:
@@ -48,6 +69,9 @@ if st.button("계산하기"):
             result = num1 / num2
 
         elif operation == "모듈러 (%)":
+            if num2 == 0:
+                st.error("0으로 나눌 수 없습니다.")
+                st.stop()
             result = num1 % num2
 
         elif operation == "지수 (x^y)":
